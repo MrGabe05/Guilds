@@ -13,18 +13,20 @@ public class Guilds extends Plugin {
 
     @Getter private static Guilds instance;
 
-    private Redis redis;
-    private MySQL mySQL;
-
     @Override
     public void onEnable() {
         instance = this;
 
         Configuration config = new Config().getConfig();
 
-        this.redis = new Redis(config.getString("Redis.Host"), config.getInt("Redis.Port"));
+        new Redis(config.getString("Redis.Host"), config.getInt("Redis.Port"));
 
         this.loadMySQL(config);
+    }
+
+    @Override
+    public void onDisable() {
+        if(Redis.getRedis() != null) Redis.getRedis().close();
     }
 
     private void loadMySQL(Configuration config) {
@@ -47,6 +49,6 @@ public class Guilds extends Plugin {
         poolSettings.MAXIMUM_POOL_SIZE = config.getInt("MySQL.PoolSettings.MaximumPoolSize");
         poolSettings.USE_SSL = config.getBoolean("MySQL.PoolSettings.UseSSL");
 
-        this.mySQL = new MySQL(host, port, database, username, password, poolSettings);
+        new MySQL(host, port, database, username, password, poolSettings);
     }
 }

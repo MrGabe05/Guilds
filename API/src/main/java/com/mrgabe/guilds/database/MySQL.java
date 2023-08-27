@@ -9,18 +9,34 @@ import com.mrgabe.guilds.utils.PluginLogger;
 import com.mrgabe.guilds.utils.Utils;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+/*
+* MySQL Object class
+*
+* Class to support connections through MySQL.
+* The database stores all the data of the Guilds and their members.
+*/
+
 public class MySQL {
+
+    @Getter private static MySQL mySQL;
 
     private Connection connection;
 
+    /*
+    * Initialize method to establish connection with the database.
+    */
     public MySQL(String host, String port, String database, String username, String password, PoolSettings poolSettings) {
         String url = "jdbc:mysql://" + host + ":" + port + "/" + database;
 
@@ -43,12 +59,17 @@ public class MySQL {
         }
 
         this.setupTable();
+
+        mySQL = this;
     }
 
+    /*
+     *
+     */
     protected synchronized void setupTable() {
         try {
             this.execute("CREATE TABLE IF NOT EXISTS guilds_data (id int, name VARCHAR(64), tag VARCHAR(6), leader VARCHAR(36), color int, settings LONGTEXT, points int, kills int, max_members int, created_at DATE, updated_at DATE, PRIMARY KEY (`id`));");
-            this.execute("CREATE TABLE IF NOT EXISTS guilds_members_data (guild_id int, uuid VARCHAR(36), invited_by VARCHAR(36), rank id, joined_at DATE, updated_at DATE, PRIMARY KEY (`id`));");
+            this.execute("CREATE TABLE IF NOT EXISTS guilds_members_data (uuid VARCHAR(36), guild_id int, invited_by VARCHAR(36), rank id, joined_at DATE, updated_at DATE, PRIMARY KEY (`uuid`));");
         } catch (SQLException e) {
             PluginLogger.error("Error inserting columns! Please check your configuration!");
             PluginLogger.error("If this error persists, please report it to the developer!");
@@ -91,6 +112,9 @@ public class MySQL {
         PluginLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
 
+    /*
+    * Get player data from MySQL database.
+    */
     public CompletableFuture<GuildPlayer> getPlayer(UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
             String SELECT_DATA = "SELECT * FROM guilds_members_data WHERE uuid='" + uuid.toString() + "';";
@@ -99,7 +123,7 @@ public class MySQL {
             try (PreparedStatement statement = connection.prepareStatement(SELECT_DATA)) {
                 ResultSet rs = statement.executeQuery();
                 if (rs != null && rs.next()) {
-                    guildPlayer.setGangId(rs.getInt("gang_id"));
+                    guildPlayer.setGangId(rs.getInt("guild_id"));
                     guildPlayer.setRank(rs.getInt("rank"));
                     guildPlayer.setJoined((rs.getDate("joined_at") != null ? rs.getDate("joined_at") : null));
                     guildPlayer.setInvited((Utils.isValidString(rs.getString("invited_by")) ? UUID.fromString(rs.getString("invited_by")) : null));
@@ -113,12 +137,41 @@ public class MySQL {
         });
     }
 
+    /*
+    * Save all player data in the database.
+    */
     public CompletableFuture<Void> savePlayer(GuildPlayer player) {
         return CompletableFuture.runAsync(() -> {
 
         });
     }
 
+    /*
+    * You get all registered players in a guild.
+    * */
+    public CompletableFuture<List<UUID>> getMembersFromGuild(Guild guild) {
+        return CompletableFuture.supplyAsync(() -> {
+            List<UUID> memberList = new ArrayList<>();
+
+            String SELECT_DATA = "SELECT * FROM guilds_members_data WHERE guild_id='" + guild.getId() + "';";
+            try (PreparedStatement statement = connection.prepareStatement(SELECT_DATA)) {
+                ResultSet rs = statement.executeQuery();
+                if (rs != null) {
+                    while (rs.next()) {
+                        memberList.add(UUID.fromString(rs.getString("uuid")));
+                    }
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            return memberList;
+        });
+    }
+
+    /*
+    * Get guild data from MySQL database.
+    * The guild information will be obtained by its ID.
+    */
     public CompletableFuture<Guild> getGuildFromID(int id) {
         return CompletableFuture.supplyAsync(() -> {
             String SELECT_DATA = "SELECT * FROM guilds_data WHERE id='" + id + "';";

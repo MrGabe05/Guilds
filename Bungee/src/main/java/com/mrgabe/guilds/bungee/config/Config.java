@@ -43,12 +43,4 @@ public class Config {
         }
         return configuration;
     }
-
-    public void save(Configuration configuration) {
-        try {
-            ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, this.file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

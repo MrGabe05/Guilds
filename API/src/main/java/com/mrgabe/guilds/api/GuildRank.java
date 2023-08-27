@@ -2,6 +2,11 @@ package com.mrgabe.guilds.api;
 
 import lombok.Data;
 
+/*
+ * Guild Rank object class
+ * Class where all the information of the guild rank.
+ */
+
 @Data
 public class GuildRank {
 

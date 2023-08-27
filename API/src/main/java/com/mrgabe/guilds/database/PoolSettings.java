@@ -10,6 +10,9 @@ public class PoolSettings {
 
     public int PREP_STMT_CACHE_SIZE, PREP_STMT_CACHE_SQL_LIMIT, MINIMUM_IDLE, MAXIMUM_POOL_SIZE;
 
+    /*
+    * Pool configuration for the MySQL database.
+    * */
     public PoolSettings() {
         MAX_LIFETIME = 180000L;
         IDLE_TIMEOUT = 60000L;

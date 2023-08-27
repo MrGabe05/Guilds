@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 public class PluginLogger {
 
-    private static final Logger logger = Logger.getLogger("Gangs");
+    private static final Logger logger = Logger.getLogger("Guilds");
 
     public static void info(String info) {
         logger.log(Level.INFO, info);

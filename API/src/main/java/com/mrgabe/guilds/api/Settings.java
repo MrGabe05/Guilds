@@ -6,6 +6,11 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+ * Settings object class
+ * Class where all the information of guild settings.
+ */
+
 @Getter @Setter
 public class Settings {
 
