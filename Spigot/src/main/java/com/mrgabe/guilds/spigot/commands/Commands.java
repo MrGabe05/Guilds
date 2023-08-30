@@ -16,7 +16,6 @@ public class Commands implements CommandExecutor {
         if(!(sender instanceof Player)) return true;
 
         Player player = (Player) sender;
-
         if(args.length == 0) {
 
         }
