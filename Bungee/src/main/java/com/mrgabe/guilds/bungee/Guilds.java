@@ -1,6 +1,7 @@
 package com.mrgabe.guilds.bungee;
 
 import com.mrgabe.guilds.bungee.config.Config;
+import com.mrgabe.guilds.bungee.listeners.Listeners;
 import com.mrgabe.guilds.database.MySQL;
 import com.mrgabe.guilds.database.PoolSettings;
 import com.mrgabe.guilds.database.Redis;
@@ -22,6 +23,8 @@ public class Guilds extends Plugin {
         new Redis(config.getString("Redis.Host"), config.getInt("Redis.Port"));
 
         this.loadMySQL(config);
+
+        this.getProxy().getPluginManager().registerListener(this, new Listeners());
     }
 
     @Override
