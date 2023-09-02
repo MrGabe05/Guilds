@@ -1,21 +1,48 @@
 package com.mrgabe.guilds.database;
 
-/*
-* Class to store all the configuration for the MySQL database.
-* */
+/**
+ * Configuration class for storing settings related to the MySQL database connection pool.
+ * This class holds various parameters that define the behavior of the database connection pool.
+ */
 public class PoolSettings {
 
-    public long MAX_LIFETIME, IDLE_TIMEOUT;
+    // Maximum lifetime of a database connection in milliseconds
+    public long MAX_LIFETIME;
 
-    public String CHARACTER_ENCODING, ENCODING;
+    // Timeout for an idle database connection in milliseconds
+    public long IDLE_TIMEOUT;
 
-    public boolean CACHE_PREP_STMTS, USE_UNICODE, USE_SSL;
+    // Character encoding used for database communication
+    public String CHARACTER_ENCODING;
 
-    public int PREP_STMT_CACHE_SIZE, PREP_STMT_CACHE_SQL_LIMIT, MINIMUM_IDLE, MAXIMUM_POOL_SIZE;
+    // Encoding format for database communication
+    public String ENCODING;
 
-    /*
-    * Pool configuration for the MySQL database.
-    * */
+    // Flag to enable caching of prepared statements
+    public boolean CACHE_PREP_STMTS;
+
+    // Flag to enable Unicode character support
+    public boolean USE_UNICODE;
+
+    // Flag to enable SSL encryption for the database connection
+    public boolean USE_SSL;
+
+    // Minimum number of idle database connections in the pool
+    public int MINIMUM_IDLE;
+
+    // Maximum number of database connections in the pool
+    public int MAXIMUM_POOL_SIZE;
+
+    // Size of the prepared statement cache
+    public int PREP_STMT_CACHE_SIZE;
+
+    // SQL statement cache limit
+    public int PREP_STMT_CACHE_SQL_LIMIT;
+
+    /**
+     * Default constructor that initializes the pool settings with default values.
+     * You can modify these settings as needed for your MySQL database configuration.
+     */
     public PoolSettings() {
         MAX_LIFETIME = 180000L;
         IDLE_TIMEOUT = 60000L;

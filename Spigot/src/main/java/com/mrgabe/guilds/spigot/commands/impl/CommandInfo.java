@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 public class CommandInfo extends GCommand {
 
     public CommandInfo() {
-        super("info", "guilds.command.info");
+        super("info", "guilds.command.info", true);
     }
 
     @Override

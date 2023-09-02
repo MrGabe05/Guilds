@@ -10,11 +10,9 @@ import java.sql.Date;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-/*
- * Guild Player object class
- * Class where all the information of the player.
+/**
+ * A class representing a GuildPlayer object that stores information about a player in the Guilds plugin.
  */
-
 @Data
 public class GuildPlayer {
 
@@ -22,28 +20,36 @@ public class GuildPlayer {
 
     private String name;
 
-    private boolean online;
+    private boolean online = false;
+    private boolean hasGuild = false;
 
-    private int guildId, rank = -1;
+    private int rank = 1;
+    private int guildId = -1;
 
     private Date joined = null;
     private UUID invited = null;
 
+    /**
+     * Saves the player's information in both Redis and MySQL databases.
+     *
+     * @return A CompletableFuture representing the save operation.
+     */
     public CompletableFuture<Void> savePlayer() {
         return CompletableFuture.runAsync(() -> {
             try {
                 Redis.getRedis().set(this.uuid.toString(), new ObjectMapper().writeValueAsString(this));
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
+            } catch (JsonProcessingException ignored) {}
 
             MySQL.getMySQL().savePlayer(this);
         });
     }
 
-    /*
-    * The player will be obtained by his UUID.
-    * */
+    /**
+     * Retrieves a player by their UUID.
+     *
+     * @param uuid The UUID of the player to retrieve.
+     * @return A CompletableFuture containing the GuildPlayer associated with the provided UUID.
+     */
     public static CompletableFuture<GuildPlayer> getPlayerByUuid(UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
             String data = Redis.getRedis().get(uuid.toString()).join();
@@ -58,9 +64,12 @@ public class GuildPlayer {
         });
     }
 
-    /*
-    * It will get the player by name.
-    * */
+    /**
+     * Retrieves a player by their name.
+     *
+     * @param name The name of the player to retrieve.
+     * @return A CompletableFuture containing the GuildPlayer associated with the provided name.
+     */
     public static CompletableFuture<GuildPlayer> getPlayerByName(String name) {
         return CompletableFuture.supplyAsync(() -> MySQL.getMySQL().getPlayerByName(name).join());
     }

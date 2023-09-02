@@ -22,9 +22,27 @@ public class Lang {
 
     public static Lang
             UNKNOWN_ARGS,
+            PLAYER_NEED,
+            PLAYER_ONLY,
+            PLAYER_HAS_GUILD,
+            PLAYER_NOT_EXISTS,
+            PLAYER_NOT_ONLINE,
+            PLAYER_NOT_IN_GUILD,
+            PLAYER_NOT_PERMISSIONS,
             GUILD_HELP,
+            GUILD_CREATED,
+            GUILD_DISBAND,
             GUILD_NOT_HAVE,
             GUILD_NOT_EXISTS,
+            GUILD_NOT_INVITED,
+            GUILD_ALREADY_HAVE,
+            GUILD_ALREADY_INVITED,
+            GUILD_PLAYER_JOINED,
+            GUILD_PLAYER_KICKED,
+            GUILD_PLAYER_INVITED,
+            GUILD_NOT_PERMISSIONS_FOR_DISBAND,
+            GUILD_NOT_PERMISSIONS_FOR_INVITE,
+            GUILD_NOT_PERMISSIONS_FOR_KICK,
             GUILD_INFO;
 
     /**
@@ -34,6 +52,10 @@ public class Lang {
      */
     public void addLang(List<String> text) {
         langs = text.stream().map(Utils::color).collect(Collectors.toList());
+    }
+
+    public List<String> get(Placeholders placeholders) {
+        return this.langs.stream().map(placeholders::parse).collect(Collectors.toList());
     }
 
     /**
@@ -54,6 +76,7 @@ public class Lang {
     public void send(CommandSender sender, Placeholders placeholders) {
         for (String s : this.langs) {
             s = placeholders.parse(s);
+
             sender.sendMessage(Utils.color(s));
         }
     }

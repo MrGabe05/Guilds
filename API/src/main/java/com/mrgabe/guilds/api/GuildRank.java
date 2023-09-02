@@ -2,9 +2,8 @@ package com.mrgabe.guilds.api;
 
 import lombok.Data;
 
-/*
- * Guild Rank object class
- * Class where all the information of the guild rank.
+/**
+ * A class representing a GuildRank object that stores information about a guild rank in the Guilds plugin.
  */
 
 @Data
@@ -18,6 +17,7 @@ public class GuildRank {
             broadcast,
             modifyMotd,
             kickMembers,
+            inviteMembers,
             guildParty,
             modifyName,
             disableChat,

@@ -1,30 +1,23 @@
 package com.mrgabe.guilds.api;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
-/*
- * Settings object class
- * Class where all the information of guild settings.
+/**
+ * A class representing a Settings object that stores information about guild settings in the Guilds plugin.
  */
 
-@Getter @Setter
+@Data
 public class Settings {
 
-    private String motd;
+    /**
+     * Creates a new Settings object with default values.
+     */
+    private String motd = "";
 
-    public boolean chat, locked;
+    private boolean chat, locked = true;
 
-    private Map<String, GuildRank> ranksSettings;
-
-    public Settings() {
-        this.motd = "";
-        this.chat = true;
-        this.locked = true;
-
-        this.ranksSettings = new HashMap<>();
-    }
+    private Set<GuildRank> ranksSettings = new HashSet<>();
 }
