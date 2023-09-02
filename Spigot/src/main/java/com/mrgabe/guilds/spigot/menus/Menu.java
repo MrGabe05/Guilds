@@ -5,8 +5,8 @@ import com.mrgabe.guilds.spigot.Guilds;
 import com.mrgabe.guilds.spigot.config.YamlConfig;
 import com.mrgabe.guilds.spigot.utils.ItemBuilder;
 import com.mrgabe.guilds.spigot.utils.Placeholders;
-import com.mrgabe.guilds.spigot.utils.Utils;
 import com.mrgabe.guilds.utils.PluginLogger;
+import com.mrgabe.guilds.utils.Utils;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,6 +24,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
+/**
+ * An abstract class for creating customizable menus in Bukkit/Spigot.
+ */
 @Getter
 public abstract class Menu implements Listener {
 
@@ -35,13 +38,19 @@ public abstract class Menu implements Listener {
     private final Map<Integer, String> actions = new HashMap<>();
     private final Map<Integer, ItemBuilder> fillItems = new HashMap<>();
 
+    /**
+     * Constructs a Menu with a YamlConfig and Placeholders.
+     *
+     * @param cfg             The YamlConfig containing menu configuration.
+     * @param textPlaceholders The placeholders to apply to text elements.
+     */
     public Menu(YamlConfig cfg, Placeholders textPlaceholders) {
         this.cfg = cfg;
 
         String title = textPlaceholders.parse(Utils.color(cfg.getString("Title")));
 
         InventoryType type = InventoryType.valueOf(cfg.getString("InventoryType", "CHEST"));
-        if(type == InventoryType.CHEST || type == InventoryType.PLAYER) {
+        if (type == InventoryType.CHEST || type == InventoryType.PLAYER) {
             this.inventory = Bukkit.createInventory(null, 9 * cfg.getStringList("Pattern").size(), title);
         } else {
             this.inventory = Bukkit.createInventory(null, type, title);
@@ -52,10 +61,21 @@ public abstract class Menu implements Listener {
         Bukkit.getPluginManager().registerEvents(this, Guilds.getInstance());
     }
 
+    /**
+     * Sets an item in the menu at a specific slot.
+     *
+     * @param i     The slot index.
+     * @param stack The ItemStack to set.
+     */
     public void setItem(int i, ItemStack stack) {
         this.inventory.setItem(i, stack);
     }
 
+    /**
+     * Opens the menu for a player.
+     *
+     * @param p The player to open the menu for.
+     */
     public void open(Player p) {
         p.openInventory(this.inventory);
     }
@@ -64,7 +84,7 @@ public abstract class Menu implements Listener {
         Map<Character, List<Integer>> charSlots = new HashMap<>();
 
         List<String> pattern = cfg.getStringList("Pattern");
-        for(int row = 0; row < pattern.size(); row++) {
+        for (int row = 0; row < pattern.size(); row++) {
             String patternLine = pattern.get(row);
             int slot = row * 9;
 
@@ -81,7 +101,7 @@ public abstract class Menu implements Listener {
                         }
                     }
 
-                    if(!charSlots.containsKey(ch))
+                    if (!charSlots.containsKey(ch))
                         charSlots.put(ch, new ArrayList<>());
 
                     charSlots.get(ch).add(slot);
@@ -94,11 +114,19 @@ public abstract class Menu implements Listener {
         this.charSlots = charSlots;
     }
 
+    /**
+     * Gets the slots for a specific key in the configuration section.
+     *
+     * @param section   The configuration section.
+     * @param key       The key to look up in the section.
+     * @param charSlots A map of character slots.
+     * @return A list of slot indices.
+     */
     protected static List<Integer> getSlots(YamlConfig section, String key, Map<Character, List<Integer>> charSlots) {
-        if(!section.contains(key)) return new ArrayList<>();
+        if (!section.contains(key)) return new ArrayList<>();
 
         List<Character> chars = new ArrayList<>();
-        for(char ch : section.getString(key).toCharArray())
+        for (char ch : section.getString(key).toCharArray())
             chars.add(ch);
 
         List<Integer> slots = new ArrayList<>();
@@ -108,32 +136,45 @@ public abstract class Menu implements Listener {
         return slots.isEmpty() ? Collections.singletonList(-1) : slots;
     }
 
+    /**
+     * Gets an ItemBuilder for an item in the configuration section.
+     *
+     * @param fileName        The name of the configuration file.
+     * @param section         The configuration section.
+     * @return An ItemBuilder for the item.
+     */
     protected static ItemBuilder getItemStack(String fileName, ConfigurationSection section) {
         return getItemStack(fileName, section, new Placeholders());
     }
 
+    /**
+     * Gets an ItemBuilder for an item in the configuration section with text placeholders.
+     *
+     * @param fileName        The name of the configuration file.
+     * @param section         The configuration section.
+     * @param textPlaceholders The placeholders to apply to text elements.
+     * @return An ItemBuilder for the item.
+     */
     protected static ItemBuilder getItemStack(String fileName, ConfigurationSection section, Placeholders textPlaceholders) {
-        if(section == null || !section.contains("Type")) return null;
+        if (section == null || !section.contains("Type")) return null;
 
         XMaterial material;
-
         String color = null;
 
         String s = section.getString("Type", "BEDROCK");
-        if(s.contains(":")) {
+        if (s.contains(":")) {
             material = XMaterial.matchXMaterial(s.split(":")[0]).orElse(XMaterial.BEDROCK);
-
             color = s.split(":")[1];
         } else {
             material = XMaterial.matchXMaterial(s).orElse(XMaterial.BEDROCK);
         }
 
         ItemBuilder itemBuilder = new ItemBuilder(Objects.requireNonNull(material.parseItem()));
-        if(color != null) itemBuilder.setColor(color);
-        if(section.contains("Name")) itemBuilder.withName(textPlaceholders.parse(section.getString("Name")));
-        if(section.contains("Lore")) itemBuilder.withLore(section.getStringList("Lore"), textPlaceholders);
-        if(section.contains("Enchants")) {
-            for(String _enchantment : section.getConfigurationSection("Enchants").getKeys(false)) {
+        if (color != null) itemBuilder.setColor(color);
+        if (section.contains("Name")) itemBuilder.withName(textPlaceholders.parse(section.getString("Name")));
+        if (section.contains("Lore")) itemBuilder.withLore(section.getStringList("Lore"), textPlaceholders);
+        if (section.contains("Enchants")) {
+            for (String _enchantment : section.getConfigurationSection("Enchants").getKeys(false)) {
                 Enchantment enchantment;
 
                 try {
@@ -147,35 +188,57 @@ public abstract class Menu implements Listener {
             }
         }
 
-        if(section.contains("Flags")) {
-            for(String flag : section.getStringList("Flags")) itemBuilder.withFlags(ItemFlag.valueOf(flag));
+        if (section.contains("Flags")) {
+            for (String flag : section.getStringList("Flags")) itemBuilder.withFlags(ItemFlag.valueOf(flag));
         }
-
-        if(section.getBoolean("Unbreakable", false)) itemBuilder.setUnbreakable();
 
         return itemBuilder;
     }
 
+    /**
+     * Handles the InventoryOpenEvent when the menu is opened.
+     *
+     * @param event The InventoryOpenEvent.
+     */
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
         if (event.getInventory().equals(this.inventory) && event.getPlayer() instanceof Player) this.onOpen(event);
     }
 
+    /**
+     * Handles the InventoryMoveItemEvent when items are moved.
+     *
+     * @param event The InventoryMoveItemEvent.
+     */
     @EventHandler
     public void itemMove(InventoryMoveItemEvent event) {
         if (event.getDestination().equals(this.inventory) || event.getSource().equals(this.inventory)) event.setCancelled(true);
     }
 
+    /**
+     * Handles the InventoryClickEvent when an item is clicked in the menu.
+     *
+     * @param event The InventoryClickEvent.
+     */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getInventory().equals(this.inventory) && event.getCurrentItem() != null && event.getWhoClicked() instanceof Player) {
             this.onClick(event);
-
             event.setCancelled(true);
         }
     }
 
+    /**
+     * Abstract method to be implemented for actions when the menu is opened.
+     *
+     * @param event The InventoryOpenEvent.
+     */
     public abstract void onOpen(InventoryOpenEvent event);
 
+    /**
+     * Abstract method to be implemented for actions when an item in the menu is clicked.
+     *
+     * @param event The InventoryClickEvent.
+     */
     public abstract void onClick(InventoryClickEvent event);
 }

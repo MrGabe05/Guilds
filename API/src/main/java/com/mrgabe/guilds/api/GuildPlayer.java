@@ -20,26 +20,48 @@ public class GuildPlayer {
 
     private final UUID uuid;
 
+    private String name;
+
     private boolean online;
 
-    private int gangId, rank = -1;
+    private int guildId, rank = -1;
 
     private Date joined = null;
     private UUID invited = null;
 
-    public static CompletableFuture<GuildPlayer> of(UUID uuid) {
+    public CompletableFuture<Void> savePlayer() {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                Redis.getRedis().set(this.uuid.toString(), new ObjectMapper().writeValueAsString(this));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+
+            MySQL.getMySQL().savePlayer(this);
+        });
+    }
+
+    /*
+    * The player will be obtained by his UUID.
+    * */
+    public static CompletableFuture<GuildPlayer> getPlayerByUuid(UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
             String data = Redis.getRedis().get(uuid.toString()).join();
-            ObjectMapper objectMapper = new ObjectMapper();
 
             GuildPlayer guildPlayer = new GuildPlayer(uuid);
             try {
-                guildPlayer = (data != null ? objectMapper.readValue(data, GuildPlayer.class) : MySQL.getMySQL().getPlayer(uuid).join());
-
-                Redis.getRedis().set(uuid.toString(), objectMapper.writeValueAsString(guildPlayer));
+                guildPlayer = (data != null ? new ObjectMapper().readValue(data, GuildPlayer.class) : MySQL.getMySQL().getPlayerByUuid(uuid).join());
+                guildPlayer.savePlayer();
             } catch (JsonProcessingException ignored) {}
 
             return guildPlayer;
         });
+    }
+
+    /*
+    * It will get the player by name.
+    * */
+    public static CompletableFuture<GuildPlayer> getPlayerByName(String name) {
+        return CompletableFuture.supplyAsync(() -> MySQL.getMySQL().getPlayerByName(name).join());
     }
 }

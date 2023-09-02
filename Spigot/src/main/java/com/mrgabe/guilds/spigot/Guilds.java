@@ -3,12 +3,15 @@ package com.mrgabe.guilds.spigot;
 import com.mrgabe.guilds.database.MySQL;
 import com.mrgabe.guilds.database.PoolSettings;
 import com.mrgabe.guilds.database.Redis;
+import com.mrgabe.guilds.spigot.commands.GManager;
 import com.mrgabe.guilds.spigot.config.YamlConfig;
 import com.mrgabe.guilds.spigot.lang.Lang;
-import com.mrgabe.guilds.spigot.utils.Version;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/*
+ * Main class to run the plugin on Spigot.
+ * */
 @Getter
 public class Guilds extends JavaPlugin {
 
@@ -18,22 +21,28 @@ public class Guilds extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        new Version();
-
         YamlConfig config = new YamlConfig(this, "Settings");
-
-        Lang.loadLangs();
-
         new Redis(config.getString("Redis.Host"), config.getInt("Redis.Port"));
 
         this.loadMySQL(config);
+
+        Lang.loadLangs();
+
+        new GManager(this);
     }
 
+    /*
+     * onDisable method used to safely disconnect databases.
+     * */
     @Override
     public void onDisable() {
         if(Redis.getRedis() != null) Redis.getRedis().close();
+        if(MySQL.getMySQL() != null) MySQL.getMySQL().close();
     }
 
+    /*
+     * Load the MySQL configuration and initialize the class to establish connection.
+     * */
     private void loadMySQL(YamlConfig config) {
         String host = config.getString("MySQL.Host");
         String port = config.getString("MySQL.Port");

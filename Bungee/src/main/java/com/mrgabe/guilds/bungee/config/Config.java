@@ -11,11 +11,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
+/*
+* Class in charge of loading the configuration
+* */
 @Getter
 public class Config {
 
     private final File file;
 
+    /*
+    * Initializer which will create a new file with all the information
+    * of the file that contains the plugin in such a case that it does not exist.
+    * */
     public Config() {
         File configFile = new File(Guilds.getInstance().getDataFolder(), "Settings.yml");
         if (!configFile.exists()) {
@@ -34,6 +41,9 @@ public class Config {
         this.file = configFile;
     }
 
+    /*
+    * You get the configuration using the BungeeCord API.
+    * */
     public Configuration getConfig() {
         Configuration configuration;
         try {

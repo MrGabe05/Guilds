@@ -9,6 +9,9 @@ import lombok.Getter;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 
+/*
+* Main class to run the plugin on BungeeCord.
+* */
 @Getter
 public class Guilds extends Plugin {
 
@@ -27,11 +30,18 @@ public class Guilds extends Plugin {
         this.getProxy().getPluginManager().registerListener(this, new Listeners());
     }
 
+    /*
+    * onDisable method used to safely disconnect databases.
+    * */
     @Override
     public void onDisable() {
         if(Redis.getRedis() != null) Redis.getRedis().close();
+        if(MySQL.getMySQL() != null) MySQL.getMySQL().close();
     }
 
+    /*
+    * Load the MySQL configuration and initialize the class to establish connection.
+    * */
     private void loadMySQL(Configuration config) {
         String host = config.getString("MySQL.Host");
         String port = config.getString("MySQL.Port");

@@ -14,8 +14,4 @@ public class PluginLogger {
     public static void error(String error) {
         logger.log(Level.SEVERE, error);
     }
-
-    public static void debug(String debug) {
-        logger.log(Level.WARNING, debug);
-    }
 }

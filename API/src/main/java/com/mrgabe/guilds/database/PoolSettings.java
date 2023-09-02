@@ -1,5 +1,8 @@
 package com.mrgabe.guilds.database;
 
+/*
+* Class to store all the configuration for the MySQL database.
+* */
 public class PoolSettings {
 
     public long MAX_LIFETIME, IDLE_TIMEOUT;

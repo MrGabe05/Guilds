@@ -21,32 +21,59 @@ public class Guild {
 
     private final int id;
 
-    private final UUID owner;
+    private final GuildPlayer owner;
 
     private final Settings settings;
 
     private String name, tag;
 
-    private int kills, points, color;
+    private int kills, points, color, maxMembers;
 
     private Date date = new Date(System.currentTimeMillis());
 
+    /*
+    * All members that are in the guild will be obtained.
+    * */
     public CompletableFuture<List<UUID>> fetchMembers() {
         return CompletableFuture.supplyAsync(() -> MySQL.getMySQL().getMembersFromGuild(this).join());
     }
 
-    public static CompletableFuture<Guild> ofMember(UUID uuid) {
-        return CompletableFuture.supplyAsync(() -> {
-            GuildPlayer guildPlayer = GuildPlayer.of(uuid).join();
+    public CompletableFuture<Void> saveGuild() {
+        return CompletableFuture.runAsync(() -> {
+            ObjectMapper objectMapper = new ObjectMapper();
 
-            if(guildPlayer.getGangId() > 0) {
-                return ofID(guildPlayer.getGangId()).join();
+            try {
+                Redis.getRedis().set(String.valueOf(this.id), objectMapper.writeValueAsString(this));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            MySQL.getMySQL().saveGuild(this);
+        });
+    }
+
+    /*
+    * The guild will be obtained by some member.
+    * */
+    public static CompletableFuture<Guild> getGuildByMember(Object key) {
+        return CompletableFuture.supplyAsync(() -> {
+            GuildPlayer guildPlayer = null;
+            if(key instanceof UUID) {
+                guildPlayer = GuildPlayer.getPlayerByUuid((UUID)key).join();
+            } else if(key instanceof String) {
+                guildPlayer = GuildPlayer.getPlayerByName((String)key).join();
+            }
+
+            if(guildPlayer != null && guildPlayer.getGuildId() > 0) {
+                return getGuildById(guildPlayer.getGuildId()).join();
             }
             return null;
         });
     }
 
-    public static CompletableFuture<Guild> ofID(int id) {
+    /*
+    * The guild will be obtained by its ID.
+    * */
+    public static CompletableFuture<Guild> getGuildById(int id) {
         return CompletableFuture.supplyAsync(() -> {
             String guildData = Redis.getRedis().get(String.valueOf(id)).join();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -54,9 +81,8 @@ public class Guild {
             Guild guild = null;
 
             try {
-                guild = (guildData != null ? objectMapper.readValue(guildData, Guild.class) : MySQL.getMySQL().getGuildFromID(id).join());
-
-                Redis.getRedis().set(String.valueOf(id), objectMapper.writeValueAsString(guild));
+                guild = (guildData != null ? objectMapper.readValue(guildData, Guild.class) : MySQL.getMySQL().getGuildFromId(id).join());
+                if(guild != null) guild.saveGuild();
             } catch (JsonProcessingException ignored) {}
 
             return guild;
