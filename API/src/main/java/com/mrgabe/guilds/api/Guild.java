@@ -32,7 +32,7 @@ public class Guild {
 
     private Date date = new Date(System.currentTimeMillis());
 
-    private final Set<UUID> invitations = new HashSet<>();
+    private final Set<UUID> invitations, mutedPlayers = new HashSet<>();
 
     /**
      * Gets the rank of a player within the guild.

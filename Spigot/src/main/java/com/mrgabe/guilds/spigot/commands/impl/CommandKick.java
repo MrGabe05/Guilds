@@ -52,6 +52,12 @@ public class CommandKick extends GCommand {
                 return;
             }
 
+            GuildPlayer guildTarget = GuildPlayer.getPlayerByUuid(target.getUniqueId()).join();
+            if(guildTarget.getRank() > guildPlayer.getRank()) {
+                Lang.GUILD_NOT_PERMISSIONS_FOR_KICK.send(player);
+                return;
+            }
+
             this.kickPlayer(player, target, guild);
 
             Placeholders placeholders = new Placeholders();

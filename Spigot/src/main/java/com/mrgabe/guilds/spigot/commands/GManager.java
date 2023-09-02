@@ -38,7 +38,15 @@ public class GManager implements CommandExecutor {
                 new CommandInfo(),
                 new CommandInvite(),
                 new CommandKick(),
-                new CommandLeave()));
+                new CommandLeave(),
+                new CommandList(),
+                new CommandMute(),
+                new CommandOnline(),
+                new CommandPromote(),
+                new CommandRename(),
+                new CommandToggle(),
+                new CommandTransfer(),
+                new CommandUnmute()));
     }
 
     /**
