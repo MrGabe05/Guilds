@@ -20,3 +20,7 @@ MySQL:
     IdleTimeout: 60000
     MinimumIdle: 1
     MaximumPoolSize: 8
+
+Settings:
+  PointsForKill: 5
+  MaxMembersForGuild: 10

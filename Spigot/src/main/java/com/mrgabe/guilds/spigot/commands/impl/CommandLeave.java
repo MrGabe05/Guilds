@@ -1,10 +1,11 @@
 package com.mrgabe.guilds.spigot.commands.impl;
 
 import com.mrgabe.guilds.api.Guild;
+import com.mrgabe.guilds.api.GuildPlayer;
 import com.mrgabe.guilds.database.Redis;
 import com.mrgabe.guilds.spigot.commands.GCommand;
 import com.mrgabe.guilds.spigot.lang.Lang;
-import com.mrgabe.guilds.spigot.utils.Placeholders;
+import com.mrgabe.guilds.utils.Placeholders;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,16 +25,23 @@ public class CommandLeave extends GCommand {
                 return;
             }
 
-            this.leavePlayer(player, guild);
+            this.leavePlayer(player);
 
             Placeholders placeholders = new Placeholders();
             placeholders.set("%player%", player.getName());
 
-            guild.fetchMembers().thenAcceptAsync(members -> members.forEach(uuid -> Redis.getRedis().sendMessage(uuid, Lang.GUILD_PLAYER_KICKED.get(placeholders))));
+            guild.fetchMembers().join().forEach(uuid -> Redis.getRedis().sendNotify(uuid, Lang.GUILD_PLAYER_LEAVE.get(placeholders)));
         });
     }
 
-    private void leavePlayer(Player player, Guild guild) {
-
+    private void leavePlayer(Player player) {
+        GuildPlayer.getPlayerByUuid(player.getUniqueId()).thenAcceptAsync(guildPlayer -> {
+            guildPlayer.setHasGuild(false);
+            guildPlayer.setGuildId(-1);
+            guildPlayer.setRank(1);
+            guildPlayer.setJoined(null);
+            guildPlayer.setInvited(null);
+            guildPlayer.savePlayer();
+        });
     }
 }

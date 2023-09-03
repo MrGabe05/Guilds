@@ -1,5 +1,8 @@
 package com.mrgabe.guilds.bungee;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mrgabe.guilds.api.Guild;
 import com.mrgabe.guilds.bungee.config.Config;
 import com.mrgabe.guilds.bungee.listeners.Listeners;
 import com.mrgabe.guilds.database.MySQL;
@@ -15,6 +18,7 @@ import net.md_5.bungee.config.Configuration;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -25,6 +29,8 @@ public class Guilds extends Plugin {
 
     @Getter private static Guilds instance;
 
+    private Configuration config;
+
     /**
      * Called when the plugin is enabled.
      * Initializes the plugin, loads configuration, establishes database connections, and registers listeners.
@@ -34,7 +40,7 @@ public class Guilds extends Plugin {
         instance = this;
 
         // Load configuration using the Config class
-        Configuration config = new Config().getConfig();
+        config = new Config().getConfig();
 
         // Initialize Redis connection
         this.loadRedis(config);
@@ -77,16 +83,19 @@ public class Guilds extends Plugin {
             @Override
             public void onMessage(String channel, String message) {
                 switch (channel.toLowerCase()) {
-                    case "guilds": {
-                        if (message.startsWith("message")) {
-                            String[] split = message.split(Redis.getRedis().getSeparator());
+                    case "notify": {
+                        String[] split = message.split(Redis.getRedis().getSeparator());
+                        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(split[0]);
 
-                            // Get the player using their UUID.
-                            ProxiedPlayer player = ProxyServer.getInstance().getPlayer(UUID.fromString(split[0]));
-
-                            // Check if the player is connected before sending a message.
-                            if (player != null && player.isConnected()) {
-                                player.sendMessage(player.getUniqueId(), new TextComponent(Utils.color(split[1])));
+                        // Check if the player is connected before sending a message.
+                        if (player != null && player.isConnected()) {
+                            try {
+                                List<String> messages = (List<String>) new ObjectMapper().readValue(split[1], List.class);
+                                for(String m : messages) {
+                                    player.sendMessage(player.getUniqueId(), new TextComponent(Utils.color(m)));
+                                }
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
                             }
                         }
                         break;
@@ -94,13 +103,21 @@ public class Guilds extends Plugin {
                     case "chat": {
                         String[] split = message.split(Redis.getRedis().getSeparator());
 
-                        // Get the player using their UUID.
-                        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(UUID.fromString(split[0]));
+                        int id = Integer.parseInt(split[0]);
+                        Guild.getGuildById(id).thenAcceptAsync(guild -> {
+                            if(guild == null) return;
 
-                        // Check if the player is connected before sending a message.
-                        if (player != null && player.isConnected()) {
-                            player.sendMessage(player.getUniqueId(), new TextComponent(Utils.color(split[1])));
-                        }
+                            List<UUID> uuids = guild.fetchMembers().join();
+                            uuids.forEach(uuid -> {
+                                // Get the player using their UUID.
+                                ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
+
+                                // Check if the player is connected before sending a message.
+                                if (player != null && player.isConnected()) {
+                                    player.sendMessage(player.getUniqueId(), new TextComponent(Utils.color(split[2])));
+                                }
+                            });
+                        });
                         break;
                     }
                 }
@@ -109,7 +126,7 @@ public class Guilds extends Plugin {
 
         // Subscribe to the "guilds" and "chat" channels for message reception.
         try (Jedis jedis = Redis.getRedis().getJedisPool().getResource()) {
-            jedis.subscribe(jedisPubSub, "guilds", "chat");
+            jedis.subscribe(jedisPubSub, "notify", "chat");
         }
     }
 

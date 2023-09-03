@@ -6,7 +6,7 @@ import com.mrgabe.guilds.database.Redis;
 import com.mrgabe.guilds.spigot.commands.GCommand;
 import com.mrgabe.guilds.spigot.lang.Lang;
 import com.mrgabe.guilds.spigot.menus.impl.ConfirmMenu;
-import com.mrgabe.guilds.spigot.utils.Placeholders;
+import com.mrgabe.guilds.utils.Placeholders;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -78,7 +78,7 @@ public class CommandDisband extends GCommand {
                 guildPlayer.setJoined(null);
                 guildPlayer.savePlayer();
 
-                Redis.getRedis().sendMessage(uuid, Lang.GUILD_DISBAND.get(placeholders));
+                Redis.getRedis().sendNotify(uuid, Lang.GUILD_DISBAND.get(placeholders));
             }
 
             // Disband the guild.

@@ -20,8 +20,9 @@ import java.util.concurrent.CompletableFuture;
 public class Guild {
 
     private final int id;
-    private final GuildPlayer owner;
     private final Settings settings;
+
+    private GuildPlayer owner;
 
     private String name, tag = "";
 
@@ -85,6 +86,7 @@ public class Guild {
 
             try {
                 Redis.getRedis().set(String.valueOf(this.id), objectMapper.writeValueAsString(this));
+                Redis.getRedis().set(this.name, objectMapper.writeValueAsString(this));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }

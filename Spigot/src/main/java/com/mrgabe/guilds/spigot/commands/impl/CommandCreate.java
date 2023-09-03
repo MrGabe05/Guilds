@@ -45,7 +45,11 @@ public class CommandCreate extends GCommand {
             GuildPlayer guildPlayer = GuildPlayer.getPlayerByUuid(player.getUniqueId()).join();
 
             // Create a new guild with the calculated ID, GuildPlayer, and default settings.
-            new Guild(id, guildPlayer, new Settings()).saveGuild();
+            Guild newGuild = new Guild(id, new Settings());
+            newGuild.setName(player.getName());
+            newGuild.setTag(player.getName());
+            newGuild.setOwner(guildPlayer);
+            newGuild.saveGuild();
 
             // Inform the player that the guild has been created.
             Lang.GUILD_CREATED.send(player);

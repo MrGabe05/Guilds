@@ -20,3 +20,7 @@ MySQL:
     IdleTimeout: 60000
     MinimumIdle: 1
     MaximumPoolSize: 8
+
+Formats:
+  Chat: "&a[%player%]: &7%message%"
+  OfficerChat: "&6&Officier &a[%player%]: &7%message%"

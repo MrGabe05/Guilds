@@ -4,7 +4,7 @@ import com.mrgabe.guilds.spigot.Guilds;
 import com.mrgabe.guilds.spigot.config.YamlConfig;
 import com.mrgabe.guilds.spigot.menus.Menu;
 import com.mrgabe.guilds.spigot.utils.ItemBuilder;
-import com.mrgabe.guilds.spigot.utils.Placeholders;
+import com.mrgabe.guilds.utils.Placeholders;
 import com.mrgabe.guilds.utils.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

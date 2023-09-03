@@ -1,6 +1,8 @@
 package com.mrgabe.guilds.spigot.listeners;
 
 import com.mrgabe.guilds.api.Guild;
+import com.mrgabe.guilds.spigot.Guilds;
+import com.mrgabe.guilds.spigot.config.YamlConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,8 +30,11 @@ public class Listeners implements Listener {
         Guild.getGuildByMember(player.getUniqueId()).thenAcceptAsync(guild -> {
             if (guild == null) return; // If the player is not in a guild, return
 
+            YamlConfig config = new YamlConfig(Guilds.getInstance(), "Settings");
+
             // Increment the guild's kill count by 1
             guild.setKills(guild.getKills() + 1);
+            guild.setPoints(guild.getPoints() + config.getInt("Settings.PointsForKill"));
 
             // Save the updated guild information
             guild.saveGuild();

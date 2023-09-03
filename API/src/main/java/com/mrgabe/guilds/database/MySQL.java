@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 
 /**
 * MySQL Object class
-*
 * Class to support connections through MySQL.
 * The database stores all the data of the Guilds and their members.
 */
@@ -253,6 +252,11 @@ public class MySQL {
         });
     }
 
+    /**
+     * Returns the total number of guild data entries in the database.
+     *
+     * @return The total number of guild data entries.
+     */
     public int getGuildDataSize() {
         int size = 0;
 
@@ -260,14 +264,41 @@ public class MySQL {
         try (PreparedStatement statement = connection.prepareStatement(SELECT_DATA)) {
             ResultSet rs = statement.executeQuery();
             if (rs != null) {
-                while (rs.next()) size++;
+                while (rs.next()) {
+                    size++;
+                }
             }
         } catch (SQLException e) {
-            // Throw a RuntimeException if a database error occurs
+            // Throws a RuntimeException if a database error occurs
             throw new RuntimeException(e);
         }
 
         return size;
+    }
+
+    /**
+     * Retrieves a list of all guilds from the database.
+     *
+     * @return A CompletableFuture containing a List of Guild objects.
+     */
+    public CompletableFuture<List<Guild>> getGuildList() {
+        return CompletableFuture.supplyAsync(() -> {
+            List<Guild> guilds = new ArrayList<>();
+
+            String SELECT_DATA = "SELECT * FROM " + TABLE_GUILDS + ";";
+            try (PreparedStatement statement = connection.prepareStatement(SELECT_DATA)) {
+                ResultSet rs = statement.executeQuery();
+                if (rs != null) {
+                    while (rs.next()) {
+                        guilds.add(getGuildFromId(rs.getInt("id")).join());
+                    }
+                }
+            } catch (SQLException e) {
+                // Throws a RuntimeException if a database error occurs
+                throw new RuntimeException(e);
+            }
+            return guilds;
+        });
     }
 
     /**
@@ -292,7 +323,8 @@ public class MySQL {
                     GuildPlayer guildPlayer = GuildPlayer.getPlayerByUuid(UUID.fromString(rs.getString("leader"))).join();
 
                     // Create a Guild object with the retrieved data
-                    Guild guild = new Guild(id, guildPlayer, settings);
+                    Guild guild = new Guild(id, settings);
+                    guild.setOwner(guildPlayer);
                     guild.setName(rs.getString("name"));
                     guild.setTag(rs.getString("tag"));
                     guild.setColor(rs.getInt("color"));

@@ -1,4 +1,4 @@
-package com.mrgabe.guilds.spigot.utils;
+package com.mrgabe.guilds.utils;
 
 import java.util.HashMap;
 import java.util.Iterator;

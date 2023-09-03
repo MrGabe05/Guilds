@@ -20,14 +20,16 @@ public class GuildPlayer {
 
     private String name;
 
-    private boolean online = false;
-    private boolean hasGuild = false;
+    private boolean online, hasGuild, chat, officier = false;
 
     private int rank = 1;
     private int guildId = -1;
 
     private Date joined = null;
     private UUID invited = null;
+
+    private boolean muted = false;
+    private long mutedTime = 0L;
 
     /**
      * Saves the player's information in both Redis and MySQL databases.

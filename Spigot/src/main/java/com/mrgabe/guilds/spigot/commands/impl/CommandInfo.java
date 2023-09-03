@@ -3,7 +3,7 @@ package com.mrgabe.guilds.spigot.commands.impl;
 import com.mrgabe.guilds.api.Guild;
 import com.mrgabe.guilds.spigot.commands.GCommand;
 import com.mrgabe.guilds.spigot.lang.Lang;
-import com.mrgabe.guilds.spigot.utils.Placeholders;
+import com.mrgabe.guilds.utils.Placeholders;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;

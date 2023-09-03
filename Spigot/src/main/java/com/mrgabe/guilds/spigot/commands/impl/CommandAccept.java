@@ -5,7 +5,7 @@ import com.mrgabe.guilds.api.GuildPlayer;
 import com.mrgabe.guilds.database.Redis;
 import com.mrgabe.guilds.spigot.commands.GCommand;
 import com.mrgabe.guilds.spigot.lang.Lang;
-import com.mrgabe.guilds.spigot.utils.Placeholders;
+import com.mrgabe.guilds.utils.Placeholders;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -80,7 +80,7 @@ public class CommandAccept extends GCommand {
             Placeholders placeholders = new Placeholders();
             placeholders.set("%player%", player.getName());
 
-            guild.fetchMembers().thenAcceptAsync(members -> members.forEach(uuid -> Redis.getRedis().sendMessage(uuid, Lang.GUILD_PLAYER_JOINED.get(placeholders))));
+            guild.fetchMembers().join().forEach(uuid -> Redis.getRedis().sendNotify(uuid, Lang.GUILD_PLAYER_JOINED.get(placeholders)));
         });
     }
 }

@@ -6,9 +6,7 @@ import com.mrgabe.guilds.api.GuildRank;
 import com.mrgabe.guilds.database.Redis;
 import com.mrgabe.guilds.spigot.commands.GCommand;
 import com.mrgabe.guilds.spigot.lang.Lang;
-import com.mrgabe.guilds.spigot.utils.Placeholders;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import com.mrgabe.guilds.utils.Placeholders;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -41,34 +39,38 @@ public class CommandKick extends GCommand {
                 return;
             }
 
-            OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
-            if(!target.hasPlayedBefore()) {
+            GuildPlayer guildTarget = GuildPlayer.getPlayerByName(args[0]).join();
+            if(guildTarget == null) {
                 Lang.PLAYER_NOT_EXISTS.send(player);
                 return;
             }
 
-            if(!guild.isMember(target.getUniqueId()).join()) {
-                Lang.PLAYER_NOT_IN_GUILD.send(player);
-                return;
-            }
-
-            GuildPlayer guildTarget = GuildPlayer.getPlayerByUuid(target.getUniqueId()).join();
             if(guildTarget.getRank() > guildPlayer.getRank()) {
                 Lang.GUILD_NOT_PERMISSIONS_FOR_KICK.send(player);
                 return;
             }
 
-            this.kickPlayer(player, target, guild);
+            if(!guild.isMember(guildTarget.getUuid()).join()) {
+                Lang.PLAYER_NOT_IN_GUILD.send(player);
+                return;
+            }
+
+            this.kickPlayer(guildTarget);
 
             Placeholders placeholders = new Placeholders();
-            placeholders.set("%player%", target.getName());
+            placeholders.set("%player%", guildTarget.getName());
             placeholders.set("%kicker%", player.getName());
 
-            guild.fetchMembers().thenAcceptAsync(members -> members.forEach(uuid -> Redis.getRedis().sendMessage(uuid, Lang.GUILD_PLAYER_KICKED.get(placeholders))));
+            guild.fetchMembers().join().forEach(uuid -> Redis.getRedis().sendNotify(uuid, Lang.GUILD_PLAYER_KICKED.get(placeholders)));
         });
     }
 
-    private void kickPlayer(Player player, OfflinePlayer target, Guild guild) {
-
+    private void kickPlayer(GuildPlayer guildTarget) {
+        guildTarget.setHasGuild(false);
+        guildTarget.setGuildId(-1);
+        guildTarget.setRank(1);
+        guildTarget.setJoined(null);
+        guildTarget.setInvited(null);
+        guildTarget.savePlayer();
     }
 }

@@ -8,3 +8,5 @@ commands:
     aliases:
       - guilds
       - g
+  gadmin:
+    usage: /<command>

@@ -1,6 +1,7 @@
 package com.mrgabe.guilds.spigot.commands.impl;
 
 import com.mrgabe.guilds.api.Guild;
+import com.mrgabe.guilds.database.Redis;
 import com.mrgabe.guilds.spigot.commands.GCommand;
 import com.mrgabe.guilds.spigot.lang.Lang;
 import org.bukkit.command.CommandSender;
@@ -35,6 +36,15 @@ public class CommandChat extends GCommand {
                 return;
             }
 
+            StringBuilder builder = new StringBuilder();
+            for(int i = 0; i < args.length; i++) {
+                if(builder.length() > 0) {
+                    builder.append(" ");
+                }
+                builder.append(args[i]);
+            }
+
+            Redis.getRedis().sendChat(guild.getId(), false, builder.toString());
         });
     }
 }

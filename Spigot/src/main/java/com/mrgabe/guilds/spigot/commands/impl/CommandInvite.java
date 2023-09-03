@@ -3,10 +3,10 @@ package com.mrgabe.guilds.spigot.commands.impl;
 import com.mrgabe.guilds.api.Guild;
 import com.mrgabe.guilds.api.GuildPlayer;
 import com.mrgabe.guilds.api.GuildRank;
+import com.mrgabe.guilds.database.Redis;
 import com.mrgabe.guilds.spigot.commands.GCommand;
 import com.mrgabe.guilds.spigot.lang.Lang;
-import com.mrgabe.guilds.spigot.utils.Placeholders;
-import org.bukkit.Bukkit;
+import com.mrgabe.guilds.utils.Placeholders;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -39,19 +39,19 @@ public class CommandInvite extends GCommand {
                 return;
             }
 
-            Player target = Bukkit.getPlayer(args[0]);
+            GuildPlayer target = GuildPlayer.getPlayerByName(args[0]).join();
             if(!target.isOnline()) {
                 Lang.PLAYER_NOT_ONLINE.send(player);
                 return;
             }
 
-            Guild guildTarget = Guild.getGuildByMember(target.getUniqueId()).join();
+            Guild guildTarget = Guild.getGuildByMember(target.getUuid()).join();
             if(guildTarget != null) {
                 Lang.PLAYER_HAS_GUILD.send(player);
                 return;
             }
 
-            if(guild.getInvitations().contains(target.getUniqueId())) {
+            if(guild.getInvitations().contains(target.getUuid())) {
                 Lang.GUILD_ALREADY_INVITED.send(player);
                 return;
             }
@@ -62,7 +62,12 @@ public class CommandInvite extends GCommand {
         });
     }
 
-    private void sendInvite(Player from, Player to, Guild guild) {
+    private void sendInvite(Player from, GuildPlayer to, Guild guild) {
+        Placeholders placeholders = new Placeholders();
+        placeholders.set("%invited_by%", from.getName());
+        placeholders.set("%guild_name%", guild.getName());
+        placeholders.set("%guild_tag%", guild.getTag());
 
+        Redis.getRedis().sendNotify(to.getUuid(), Lang.PLAYER_INVITATION.get(placeholders));
     }
 }

@@ -55,19 +55,23 @@ public class Redis {
     }
 
     /**
-     * Publishes a message to the "guilds" Redis channel for a specific UUID.
+     * Publishes a message to the "notify" Redis channel for a specific UUID.
      *
-     * @param uuid    The UUID of the recipient.
+     * @param uuid    The uuid of the receptor.
      * @param message The message content to send.
      */
-    public void sendMessage(UUID uuid, List<String> message) {
+    public void sendNotify(UUID uuid, List<String> message) {
         try {
             // Serialize the message list into a JSON string and publish it to the "guilds" channel
-            this.publish("guilds", "message" + separator + uuid.toString() + separator + new ObjectMapper().writeValueAsString(message));
+            this.publish("notify", uuid.toString() + separator + new ObjectMapper().writeValueAsString(message));
         } catch (JsonProcessingException e) {
             // If a JSON processing exception occurs, throw a runtime exception
             throw new RuntimeException(e);
         }
+    }
+
+    public void sendChat(int id, boolean officier, String message) {
+        this.publish("chat", id + separator + officier + separator + message);
     }
 
     /**

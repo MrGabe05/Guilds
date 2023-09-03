@@ -2,7 +2,7 @@ package com.mrgabe.guilds.spigot.lang;
 
 import com.mrgabe.guilds.spigot.Guilds;
 import com.mrgabe.guilds.spigot.config.YamlConfig;
-import com.mrgabe.guilds.spigot.utils.Placeholders;
+import com.mrgabe.guilds.utils.Placeholders;
 import com.mrgabe.guilds.utils.PluginLogger;
 import com.mrgabe.guilds.utils.Utils;
 import org.bukkit.command.CommandSender;
@@ -24,11 +24,15 @@ public class Lang {
             UNKNOWN_ARGS,
             PLAYER_NEED,
             PLAYER_ONLY,
+            PLAYER_MUTED,
+            PLAYER_UNMUTED,
             PLAYER_HAS_GUILD,
+            PLAYER_INVITATION,
             PLAYER_NOT_EXISTS,
             PLAYER_NOT_ONLINE,
             PLAYER_NOT_IN_GUILD,
             PLAYER_NOT_PERMISSIONS,
+            PLAYER_TOGGLE_CHAT,
             GUILD_HELP,
             GUILD_CREATED,
             GUILD_DISBAND,
@@ -40,8 +44,16 @@ public class Lang {
             GUILD_PLAYER_JOINED,
             GUILD_PLAYER_KICKED,
             GUILD_PLAYER_INVITED,
+            GUILD_PLAYER_LEAVE,
+            GUILD_MEMBER_LIST,
+            GUILD_MEMBER_ONLINE,
+            GUILD_OWNER_TRANSFER,
+            GUILD_NAME_UPDATED,
+            GUILD_NOT_PERMISSIONS_FOR_TRANSFER,
             GUILD_NOT_PERMISSIONS_FOR_DISBAND,
+            GUILD_NOT_PERMISSIONS_FOR_RENAME,
             GUILD_NOT_PERMISSIONS_FOR_INVITE,
+            GUILD_NOT_PERMISSIONS_FOR_MUTE,
             GUILD_NOT_PERMISSIONS_FOR_KICK,
             GUILD_INFO;
 

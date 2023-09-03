@@ -4,6 +4,7 @@ import com.mrgabe.guilds.database.MySQL;
 import com.mrgabe.guilds.database.PoolSettings;
 import com.mrgabe.guilds.database.Redis;
 import com.mrgabe.guilds.spigot.commands.GManager;
+import com.mrgabe.guilds.spigot.commands.admin.AdminCommands;
 import com.mrgabe.guilds.spigot.config.YamlConfig;
 import com.mrgabe.guilds.spigot.lang.Lang;
 import lombok.Getter;
@@ -39,6 +40,8 @@ public class Guilds extends JavaPlugin {
 
         // Initialize the command manager
         new GManager(this);
+
+        this.getCommand("gadmin").setExecutor(new AdminCommands());
     }
 
     /**

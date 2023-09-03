@@ -1,0 +1,90 @@
+unknown_args:
+  - "&cUnknown arguments. Type /help for command information."
+player_need:
+  - "&cYou need to specify a player."
+player_only:
+  - "&cOnly players can use this command."
+player_muted:
+  - "&cYou have been muted %time%."
+player_unmuted:
+  - "&aYou have been unmuted."
+player_has_guild:
+  - "&cYou are already in a guild. Leave your current guild to join another."
+player_invitation:
+  - "&aYou have been invited to join %guild% by %player%. Type /guild accept to join."
+player_not_exists:
+  - "&cPlayer does not exist."
+player_not_online:
+  - "&cPlayer is not online."
+player_not_in_guild:
+  - "&cYou are not a member of any guild."
+player_not_permissions:
+  - "&cYou don't have permission to do that."
+player_toggle_chat:
+  - "&aChat is now %status%."
+guild_help:
+  - "&aGuild Commands:"
+  - "/g menu &8- &7Shows a menu containing all guild’s rank and the permissions of each rank including the ability to change guild's color & display name."
+  - "/g create <guildName> <guildTag> &8- &7Create a new guild."
+  - "/g invite <playerName> &8- &7Invite a player to your guild."
+  - "/g accept <guildName> &8- &7Accept an invitation to join a guild."
+  - "/g info &8- &7Show guild information."
+  - "/g list &8- &7Displays guild Member Lists (Including all guild’s rank prefixes)."
+  - "/g online &8- &7Shows online members."
+  - "/g toggle &8- &7Toggles guild’s general chat."
+  - "/g toggleOfficerChat &8- &7Toggles guild's officer chat only."
+  - "/g chat &8- &7Switch to guild chat mode."
+  - "/g officerchat &8- &7Switch to guild officer chat mode."
+  - "/g leave &8- &7Leave your current guild."
+  - "/g kick <playerName> &8- &7Kick a player from your guild."
+  - "/g promote <playerName> [RankName] &8- &7Promote a player in your guild to the next rank (optional rank name)."
+  - "/g demote <playerName> [RankName] &8- &7Demote a player in your guild to the previous rank (optional rank name)."
+  - "/g rename <Name> &8- &7Rename your guild."
+  - "/g disband &8- &7Disband your guild. (Requires confirmation and can be only executed by the owner)"
+  - "/g transfer &8- &7Transfer ownership of your guild to another player in the same guild. (Requires confirmation)"
+  - "/g mute <player> [duration] &8- &7Mute a player in your guild (optional duration, otherwise it will be permanent)."
+  - "/g unmute <player> &8- &7Unmute a player in your guild."
+guild_created:
+  - "&aYou have created the guild %guild%."
+guild_disband:
+  - "&cThe guild has been disbanded."
+guild_not_have:
+  - "&cYou don't have a guild."
+guild_not_exists:
+  - "&cThe guild does not exist."
+guild_not_invited:
+  - "&cYou are not invited to any guild."
+guild_already_have:
+  - "&cYou are already a member of a guild."
+guild_already_invited:
+  - "&cYou are already invited to a guild."
+guild_player_joined:
+  - "&a%player% has joined the guild."
+guild_player_kicked:
+  - "&c%player% has been kicked from the guild."
+guild_player_invited:
+  - "&aYou have invited %player% to the guild."
+guild_player_leave:
+  - "&c%player% has left the guild."
+guild_member_list:
+  - "<members>&7%player% - Joined: %joined_at% - Rank: %rank%"
+guild_member_online:
+  - "<members>&a%player% (Online) - Joined: %joined_at% - Rank: %rank%"
+guild_owner_transfer:
+  - "&aOwnership of the guild has been transferred from %old_owner% to %new_owner%."
+guild_name_updated:
+  - "&aThe guild name has been updated to %name%."
+guild_not_permissions_for_transfer:
+  - "&cYou don't have permission to transfer the guild."
+guild_not_permissions_for_disband:
+  - "&cYou don't have permission to disband the guild."
+guild_not_permissions_for_rename:
+  - "&cYou don't have permission to rename the guild."
+guild_not_permissions_for_invite:
+  - "&cYou don't have permission to invite players to the guild."
+guild_not_permissions_for_mute:
+  - "&cYou don't have permission to mute players in the guild."
+guild_not_permissions_for_kick:
+  - "&cYou don't have permission to kick players from the guild."
+guild_info:
+  - "&7Guild ID: %id%, Tag: %tag%, Owner: %owner%, Date Created: %date%, Kills: %kills%, Points: %points%"
