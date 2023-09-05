@@ -158,33 +158,21 @@ public class MySQL {
     }
 
     /**
-     * Retrieves a GuildPlayer object by player name (case-insensitive) from the MySQL database.
+     * Retrieves a UUID object by player name (case-insensitive) from the MySQL database.
      *
      * @param name The name of the player to retrieve.
-     * @return A CompletableFuture that, when completed, returns the GuildPlayer object if found in the database.
+     * @return A CompletableFuture that, when completed, returns the UUID object if found in the database.
      *         Returns null if the player with the specified name is not found.
      * @throws RuntimeException If a database error occurs while retrieving the player's data.
      */
-    public CompletableFuture<GuildPlayer> getPlayerByName(String name) {
+    public CompletableFuture<UUID> getPlayerUuid(String name) {
         return CompletableFuture.supplyAsync(() -> {
             // SQL query to select player data by player name (case-insensitive)
             String SELECT_DATA = "SELECT * FROM " + TABLE_MEMBERS + " WHERE playerName='" + name.toLowerCase() + "';";
 
             try (PreparedStatement statement = connection.prepareStatement(SELECT_DATA)) {
                 ResultSet rs = statement.executeQuery();
-                if (rs != null && rs.next()) {
-                    // Initialize a GuildPlayer object with the UUID from the database
-                    GuildPlayer guildPlayer = new GuildPlayer(UUID.fromString(rs.getString("uuid")));
-                    guildPlayer.setName(rs.getString(name));
-                    guildPlayer.setGuildId(rs.getInt("guild_id"));
-                    guildPlayer.setRank(rs.getInt("rank"));
-                    guildPlayer.setJoined(rs.getDate("joined_at"));
-
-                    // Check if the "invited_by" field contains a valid UUID, and set it if so
-                    guildPlayer.setInvited((Utils.isValidString(rs.getString("invited_by")) ? UUID.fromString(rs.getString("invited_by")) : null));
-
-                    return guildPlayer; // Return the populated GuildPlayer object
-                }
+                if (rs != null && rs.next()) return UUID.fromString(rs.getString("uuid")); // Return the populated GuildPlayer object
             } catch (SQLException e) {
                 // Throw a RuntimeException if a database error occurs
                 throw new RuntimeException(e);

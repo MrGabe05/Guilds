@@ -58,6 +58,8 @@ public class CommandInvite extends GCommand {
 
             this.sendInvite(player, target, guild);
 
+            guild.getInvitations().add(target.getUuid());
+
             Lang.GUILD_PLAYER_INVITED.send(player, new Placeholders().set("%player%", player.getName()));
         });
     }

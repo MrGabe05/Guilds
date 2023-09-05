@@ -73,6 +73,11 @@ public class GuildPlayer {
      * @return A CompletableFuture containing the GuildPlayer associated with the provided name.
      */
     public static CompletableFuture<GuildPlayer> getPlayerByName(String name) {
-        return CompletableFuture.supplyAsync(() -> MySQL.getMySQL().getPlayerByName(name).join());
+        return CompletableFuture.supplyAsync(() -> {
+            UUID uuid = MySQL.getMySQL().getPlayerUuid(name).join();
+            if(uuid == null) return null;
+
+            return getPlayerByUuid(uuid).join();
+        });
     }
 }

@@ -45,6 +45,10 @@ public class Guild {
         return this.settings.getRanksSettings().stream().filter(guildRank -> guildRank.getId() == player.getRank()).findFirst().orElse(null);
     }
 
+    public GuildRank getRank(int id) {
+        return this.settings.getRanksSettings().stream().filter(guildRank -> guildRank.getId() == id).findFirst().orElse(null);
+    }
+
     /**
      * Disbands the guild by removing it from the MySQL database and deleting it from Redis.
      */
