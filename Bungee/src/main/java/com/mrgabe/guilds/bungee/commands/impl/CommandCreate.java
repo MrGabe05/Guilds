@@ -1,13 +1,13 @@
-package com.mrgabe.guilds.spigot.commands.impl;
+package com.mrgabe.guilds.bungee.commands.impl;
 
 import com.mrgabe.guilds.api.Guild;
 import com.mrgabe.guilds.api.GuildPlayer;
 import com.mrgabe.guilds.api.Settings;
+import com.mrgabe.guilds.bungee.commands.GCommand;
+import com.mrgabe.guilds.bungee.lang.Lang;
 import com.mrgabe.guilds.database.MySQL;
-import com.mrgabe.guilds.spigot.commands.GCommand;
-import com.mrgabe.guilds.spigot.lang.Lang;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  * CommandCreate class represents the command to create a guild.
@@ -29,7 +29,7 @@ public class CommandCreate extends GCommand {
      */
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Player player = (Player) sender;
+        ProxiedPlayer player = (ProxiedPlayer) sender;
 
         Guild.getGuildByMember(player.getUniqueId()).thenAcceptAsync(guild -> {
             // Check if the player is already in a guild.

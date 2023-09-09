@@ -1,7 +1,7 @@
-package com.mrgabe.guilds.spigot.commands;
+package com.mrgabe.guilds.bungee.commands;
 
 import lombok.Data;
-import org.bukkit.command.CommandSender;
+import net.md_5.bungee.api.CommandSender;
 
 /**
  * An abstract class representing a command in the Guilds plugin.

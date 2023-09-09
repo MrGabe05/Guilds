@@ -3,11 +3,16 @@ package com.mrgabe.guilds.bungee;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mrgabe.guilds.api.Guild;
+import com.mrgabe.guilds.api.GuildPlayer;
+import com.mrgabe.guilds.bungee.commands.GManager;
+import com.mrgabe.guilds.bungee.commands.admin.AdminCommands;
 import com.mrgabe.guilds.bungee.config.Config;
+import com.mrgabe.guilds.bungee.lang.Lang;
 import com.mrgabe.guilds.bungee.listeners.Listeners;
 import com.mrgabe.guilds.database.MySQL;
 import com.mrgabe.guilds.database.PoolSettings;
 import com.mrgabe.guilds.database.Redis;
+import com.mrgabe.guilds.utils.Placeholders;
 import com.mrgabe.guilds.utils.Utils;
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
@@ -50,6 +55,11 @@ public class Guilds extends Plugin {
 
         // Register event listeners
         this.getProxy().getPluginManager().registerListener(this, new Listeners());
+
+        // Initialize the command manager
+        new GManager(this);
+
+        this.getProxy().getPluginManager().registerCommand(this, new AdminCommands());
     }
 
     /**
@@ -120,13 +130,91 @@ public class Guilds extends Plugin {
                         });
                         break;
                     }
+                    case "disband": {
+                        String[] split = message.split(":");
+
+                        ProxiedPlayer player = getProxy().getPlayer(UUID.fromString(split[1]));
+                        if(player.isConnected()) {
+                            int id = Integer.parseInt(split[0]);
+
+                            Guild.getGuildById(id).thenAcceptAsync(guild -> {
+                                if(guild == null) return;
+
+                                Placeholders placeholders = new Placeholders();
+                                placeholders.set("%owner%", guild.getOwner().getName());
+                                placeholders.set("%name%", guild.getName());
+                                placeholders.set("%tag%", guild.getTag());
+                                placeholders.set("%id%", guild.getId());
+
+                                // Fetch guild members and perform cleanup.
+                                guild.fetchMembers().thenAcceptAsync(members -> {
+                                    for (UUID uuid : members) {
+                                        GuildPlayer guildPlayer = GuildPlayer.getPlayerByUuid(uuid).join();
+                                        guildPlayer.setHasGuild(false);
+                                        guildPlayer.setGuildId(-1);
+                                        guildPlayer.setRank(1);
+                                        guildPlayer.setJoined(null);
+                                        guildPlayer.savePlayer();
+
+                                        ProxiedPlayer online = getProxy().getPlayer(uuid);
+                                        if(online.isConnected()) {
+                                            Lang.GUILD_DISBAND.send(online, placeholders);
+                                        } else {
+                                            Redis.getRedis().sendNotify(uuid, Lang.GUILD_DISBAND.get(placeholders));
+                                        }
+                                    }
+
+                                    // Disband the guild.
+                                    guild.disband();
+                                });
+                            });
+                        }
+                        break;
+                    }
+                    case "transfer": {
+                        String[] split = message.split(":");
+                        ProxiedPlayer player = getProxy().getPlayer(UUID.fromString(split[1]));
+                        if(player.isConnected()) {
+                            int id = Integer.parseInt(split[0]);
+
+                            Guild.getGuildById(id).thenAcceptAsync(guild -> {
+                                if(guild == null) return;
+
+                                GuildPlayer guildPlayer = GuildPlayer.getPlayerByUuid(UUID.fromString(split[1])).join();
+                                GuildPlayer guildTarget = GuildPlayer.getPlayerByUuid(UUID.fromString(split[2])).join();
+
+                                // Set the ranks and transfer ownership.
+                                guildPlayer.setRank(1);
+                                guildTarget.setRank(10);
+
+                                guild.setOwner(guildTarget);
+                                guild.saveGuild();
+
+                                // Notify guild members about the ownership transfer.
+                                Placeholders placeholders = new Placeholders();
+                                placeholders.set("%new_owner%", guildTarget.getName());
+                                placeholders.set("%old_owner%", guildPlayer.getName());
+
+                                guild.fetchMembers().join().forEach(uuid -> {
+                                    ProxiedPlayer online = getProxy().getPlayer(uuid);
+                                    if(online.isConnected()) {
+                                        Lang.GUILD_OWNER_TRANSFER.send(online, placeholders);
+                                    } else {
+                                        Redis.getRedis().sendNotify(uuid, Lang.GUILD_OWNER_TRANSFER.get(placeholders));
+                                    }
+                                });
+                            });
+                        }
+
+
+                    }
                 }
             }
         };
 
         // Subscribe to the "guilds" and "chat" channels for message reception.
         try (Jedis jedis = Redis.getRedis().getJedisPool().getResource()) {
-            jedis.subscribe(jedisPubSub, "notify", "chat");
+            jedis.subscribe(jedisPubSub, "notify", "chat", "disband-confirm", "disband", "transfer-confirm", "transfer");
         }
     }
 

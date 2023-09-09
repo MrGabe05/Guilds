@@ -1,14 +1,13 @@
-package com.mrgabe.guilds.spigot.commands.impl;
+package com.mrgabe.guilds.bungee.commands.impl;
 
 import com.mrgabe.guilds.api.Guild;
 import com.mrgabe.guilds.api.GuildPlayer;
+import com.mrgabe.guilds.bungee.commands.GCommand;
+import com.mrgabe.guilds.bungee.lang.Lang;
 import com.mrgabe.guilds.database.Redis;
-import com.mrgabe.guilds.spigot.commands.GCommand;
-import com.mrgabe.guilds.spigot.lang.Lang;
-import com.mrgabe.guilds.spigot.menus.impl.ConfirmMenu;
 import com.mrgabe.guilds.utils.Placeholders;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  * The CommandTransfer class represents a command for transferring guild ownership.
@@ -31,7 +30,7 @@ public class CommandTransfer extends GCommand {
      */
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Player player = (Player) sender;
+        ProxiedPlayer player = (ProxiedPlayer) sender;
 
         Guild.getGuildByMember(player.getUniqueId()).thenAcceptAsync(guild -> {
             if (guild == null) {
@@ -61,24 +60,7 @@ public class CommandTransfer extends GCommand {
                 return;
             }
 
-            // Prompt the player with a confirmation menu for transferring the guild.
-            new ConfirmMenu(response -> {
-                if (response) {
-                    // Set the ranks and transfer ownership.
-                    guildPlayer.setRank(1);
-                    guildTarget.setRank(10);
-
-                    guild.setOwner(guildTarget);
-                    guild.saveGuild();
-
-                    // Notify guild members about the ownership transfer.
-                    Placeholders placeholders = new Placeholders();
-                    placeholders.set("%new_owner%", guildTarget.getName());
-                    placeholders.set("%old_owner%", guildPlayer.getName());
-
-                    guild.fetchMembers().join().forEach(uuid -> Redis.getRedis().sendNotify(uuid, Lang.GUILD_OWNER_TRANSFER.get(placeholders)));
-                }
-            });
+            Redis.getRedis().publish("transfer-confirm", guild.getId() + ":" + player.getUniqueId().toString() + ":" + guildTarget.getUuid().toString());
         });
     }
 }

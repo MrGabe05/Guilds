@@ -1,13 +1,19 @@
-package com.mrgabe.guilds.spigot.lang;
+package com.mrgabe.guilds.bungee.lang;
 
-import com.mrgabe.guilds.spigot.Guilds;
-import com.mrgabe.guilds.spigot.config.YamlConfig;
+import com.mrgabe.guilds.bungee.Guilds;
 import com.mrgabe.guilds.utils.Placeholders;
 import com.mrgabe.guilds.utils.PluginLogger;
 import com.mrgabe.guilds.utils.Utils;
-import org.bukkit.command.CommandSender;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -101,16 +107,28 @@ public class Lang {
      * Loads predefined language objects from a configuration file.
      */
     public static void loadLangs() {
-        YamlConfig langConfig = new YamlConfig(Guilds.getInstance(), "Lang");
+        File configFile = new File(Guilds.getInstance().getDataFolder(), "Lang.yml");
+        if (!configFile.exists()) {
+            try {
+                try (InputStream is = Guilds.getInstance().getResourceAsStream("Lang.yml")) {
+                    Files.copy(is, configFile.toPath());
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Error creating the config file.", e);
+            }
+        }
+
+        Configuration langConfig;
+        try {
+            langConfig = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading the config file.", e);
+        }
 
         for (Field field : Lang.class.getFields()) {
             field.setAccessible(true);
 
             if (field.getType() == Lang.class) {
-                if (!langConfig.isSet(field.getName().toLowerCase(Locale.ROOT))) {
-                    langConfig.set(field.getName().toLowerCase(Locale.ROOT), field.getName().toLowerCase(Locale.ROOT) + " value not set");
-                }
-
                 try {
                     if (field.get(null) == null) {
                         field.set(field, new Lang());
@@ -123,7 +141,6 @@ public class Lang {
                 }
             }
         }
-        langConfig.save();
 
         PluginLogger.info("Lang loaded.");
     }

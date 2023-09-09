@@ -46,7 +46,7 @@ public class Redis {
      *         It will complete successfully when the message is successfully published,
      *         or exceptionally if an error occurs during the publishing process.
      */
-    private CompletableFuture<Void> publish(String channel, String value) {
+    public CompletableFuture<Void> publish(String channel, String value) {
         return CompletableFuture.runAsync(() -> {
             try (Jedis jedis = this.jedisPool.getResource()) {
                 jedis.publish(channel, value);

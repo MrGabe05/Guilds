@@ -1,29 +1,31 @@
-package com.mrgabe.guilds.spigot.commands.admin;
+package com.mrgabe.guilds.bungee.commands.admin;
 
 import com.mrgabe.guilds.api.Guild;
 import com.mrgabe.guilds.api.GuildPlayer;
+import com.mrgabe.guilds.bungee.lang.Lang;
 import com.mrgabe.guilds.database.MySQL;
 import com.mrgabe.guilds.database.Redis;
-import com.mrgabe.guilds.spigot.lang.Lang;
-import com.mrgabe.guilds.spigot.menus.impl.ConfirmMenu;
 import com.mrgabe.guilds.utils.Placeholders;
 import com.mrgabe.guilds.utils.Utils;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Command;
 
 import java.text.SimpleDateFormat;
 import java.util.UUID;
 
-public class AdminCommands implements CommandExecutor {
+public class AdminCommands extends Command {
+
+    public AdminCommands() {
+        super("gadmin", "gadmin.commands");
+    }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String s, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         // Check if the sender has the necessary permission.
         if (!sender.hasPermission("gadmin.commands")) {
             Lang.PLAYER_NOT_PERMISSIONS.send(sender);
-            return true;
+            return;
         }
 
         // Handle the "/gadmin guilds" command to list all guilds.
@@ -36,7 +38,7 @@ public class AdminCommands implements CommandExecutor {
                 }
                 sender.sendMessage(Utils.color("&a"));
             });
-            return true;
+            return;
         }
 
         // Handle other admin commands.
@@ -46,14 +48,14 @@ public class AdminCommands implements CommandExecutor {
             sender.sendMessage(Utils.color("&a/gadmin deleteGuild <guildId> &8- &7requires confirmation."));
             sender.sendMessage(Utils.color("&a/gadmin renameGuild <guildId> <new name> &8- &7requires confirmation."));
             sender.sendMessage(Utils.color("&a/gadmin details <guildId> &8- &7Shows all information of the targeted guild."));
-            return true;
+            return;
         }
 
         // Handle the "/gadmin deleteguild" command to delete a guild.
         if (args[0].equalsIgnoreCase("deleteguild")) {
             if (!Utils.isInt(args[1])) {
                 sender.sendMessage(Utils.color("&cIt must be a number."));
-                return true;
+                return;
             }
 
             int id = Integer.parseInt(args[1]);
@@ -63,27 +65,23 @@ public class AdminCommands implements CommandExecutor {
                     Lang.GUILD_NOT_EXISTS.send(sender);
                     return;
                 }
-                if (sender instanceof Player) {
+                if (sender instanceof ProxiedPlayer) {
                     // Prompt the player with a confirmation menu for disbanding the guild.
-                    new ConfirmMenu(response -> {
-                        if (response) {
-                            this.disband(guild);
-                        }
-                    }).open((Player) sender);
+                    Redis.getRedis().publish("disband-confirm", guild.getId() + ":" + ((ProxiedPlayer)sender).getUniqueId().toString());
                 } else {
                     this.disband(guild);
                 }
 
                 sender.sendMessage(Utils.color("&cThis guild was successfully removed."));
             });
-            return true;
+            return;
         }
 
         // Handle the "/gadmin details" command to show detailed information about a guild.
         if (args[0].equalsIgnoreCase("details")) {
             if (!Utils.isInt(args[1])) {
                 sender.sendMessage(Utils.color("&cIt must be a number."));
-                return true;
+                return;
             }
 
             int id = Integer.parseInt(args[1]);
@@ -109,10 +107,10 @@ public class AdminCommands implements CommandExecutor {
 
                 Lang.GUILD_INFO.send(sender, placeholders);
             });
-            return true;
+            return;
         }
 
-        return false;
+        return;
     }
 
     /**

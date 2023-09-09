@@ -1,15 +1,15 @@
-package com.mrgabe.guilds.spigot.commands.impl;
+package com.mrgabe.guilds.bungee.commands.impl;
 
 import com.mrgabe.guilds.api.Guild;
 import com.mrgabe.guilds.api.GuildPlayer;
 import com.mrgabe.guilds.api.GuildRank;
+import com.mrgabe.guilds.bungee.commands.GCommand;
+import com.mrgabe.guilds.bungee.lang.Lang;
 import com.mrgabe.guilds.database.Redis;
-import com.mrgabe.guilds.spigot.commands.GCommand;
-import com.mrgabe.guilds.spigot.lang.Lang;
 import com.mrgabe.guilds.utils.Placeholders;
 import com.mrgabe.guilds.utils.Utils;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  * The CommandRename class represents a command for renaming a guild.
@@ -32,7 +32,7 @@ public class CommandRename extends GCommand {
      */
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Player player = (Player) sender;
+        ProxiedPlayer player = (ProxiedPlayer) sender;
 
         Guild.getGuildByMember(player.getUniqueId()).thenAcceptAsync(guild -> {
             if (guild == null) {

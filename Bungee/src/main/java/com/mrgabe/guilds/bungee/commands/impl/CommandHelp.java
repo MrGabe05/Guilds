@@ -1,8 +1,8 @@
-package com.mrgabe.guilds.spigot.commands.impl;
+package com.mrgabe.guilds.bungee.commands.impl;
 
-import com.mrgabe.guilds.spigot.commands.GCommand;
-import com.mrgabe.guilds.spigot.lang.Lang;
-import org.bukkit.command.CommandSender;
+import com.mrgabe.guilds.bungee.commands.GCommand;
+import com.mrgabe.guilds.bungee.lang.Lang;
+import net.md_5.bungee.api.CommandSender;
 
 public class CommandHelp extends GCommand {
 

@@ -1,13 +1,12 @@
-package com.mrgabe.guilds.spigot.commands.impl;
+package com.mrgabe.guilds.bungee.commands.impl;
 
 import com.mrgabe.guilds.api.Guild;
-import com.mrgabe.guilds.spigot.commands.GCommand;
-import com.mrgabe.guilds.spigot.lang.Lang;
+import com.mrgabe.guilds.api.GuildPlayer;
+import com.mrgabe.guilds.bungee.commands.GCommand;
+import com.mrgabe.guilds.bungee.lang.Lang;
 import com.mrgabe.guilds.utils.Placeholders;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.text.SimpleDateFormat;
 
@@ -31,7 +30,7 @@ public class CommandInfo extends GCommand {
      */
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Player player = (Player) sender;
+        ProxiedPlayer player = (ProxiedPlayer) sender;
 
         if (args.length == 0) {
             Guild.getGuildByMember(player.getUniqueId()).thenAcceptAsync(guild -> {
@@ -59,17 +58,13 @@ public class CommandInfo extends GCommand {
             return;
         }
 
-        Object target;
+        GuildPlayer.getPlayerByName(args[0]).thenAcceptAsync(guildTarget -> {
+            if(guildTarget == null) {
+                Lang.PLAYER_NOT_EXISTS.send(player);
+                return;
+            }
 
-        OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(args[0]);
-        if (targetPlayer.hasPlayedBefore()) {
-            target = targetPlayer.getUniqueId();
-        } else {
-            target = args[0];
-        }
-
-        Guild.getGuildByMember(target).thenAcceptAsync(guild -> {
-            // Check if the target player is in a guild.
+            Guild guild = Guild.getGuildById(guildTarget.getGuildId()).join();
             if (guild == null) {
                 Lang.GUILD_NOT_EXISTS.send(player);
                 return;
