@@ -1,0 +1,22 @@
+Title: "Confirm?"
+Pattern:
+  - "#########"
+  - "##@###$##"
+  - "#########"
+
+Items:
+  '@':
+    Action: YES
+    Type: GREEN_WOOL
+    Name: "&a&lYES"
+    Lore:
+      - ""
+  '$':
+    Action: NO
+    Type: RED_WOOL
+    Name: "&c&lNO"
+    Lore:
+      - ""
+  '#':
+    Type: GRAY_STAINED_GLASS_PANE
+    Name: ""

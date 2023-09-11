@@ -1,0 +1,12 @@
+Title: "Guild"
+Pattern:
+  - "#########"
+  - "#@@@@@@@#"
+  - "#########"
+
+ranks: '@'
+
+Items:
+  '#':
+    Type: GRAY_STAINED_GLASS_PANE
+    Name: "&f"

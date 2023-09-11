@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/API.iml" filepath="$PROJECT_DIR$/API.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Bungee.iml" filepath="$PROJECT_DIR$/Bungee.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Gangs.iml" filepath="$PROJECT_DIR$/Gangs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Spigot.iml" filepath="$PROJECT_DIR$/Spigot.iml" />
+    </modules>
+  </component>
+</project>

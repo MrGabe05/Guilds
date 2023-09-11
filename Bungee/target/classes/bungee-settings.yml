@@ -1,0 +1,26 @@
+Redis:
+  Host: "localhost"
+  Port: 6379
+
+MySQL:
+  Host: "localhost"
+  Port: 3306
+  Database: "Guilds"
+  Username: "Guilds"
+  Password: "Guilds123"
+  PoolSettings:
+    CachePrepStmts: true
+    PrepStmtCacheSize: 250
+    PrepStmtCacheSqlLimit: 2048
+    CharacterEncoding: "utf8"
+    Encoding: "UTF-8"
+    UseUnicode: true
+    UseSSL: false
+    MaxLifetime: 180000
+    IdleTimeout: 60000
+    MinimumIdle: 1
+    MaximumPoolSize: 8
+
+Formats:
+  Chat: "&a[%player%]: &7%message%"
+  OfficerChat: "&6&Officier &a[%player%]: &7%message%"

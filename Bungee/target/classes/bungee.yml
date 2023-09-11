@@ -1,0 +1,5 @@
+name: "Guilds"
+version: "1.0"
+main: com.mrgabe.guilds.bungee.Guilds
+author: "MrGabe05"
+description: "Guilds System for VallenMC"

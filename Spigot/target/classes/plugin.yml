@@ -1,0 +1,12 @@
+name: Guilds
+version: 1.0
+main: com.mrgabe.guilds.spigot.Guilds
+author: MrGabe05
+description: Guild system for VallenMC
+commands:
+  guild:
+    aliases:
+      - guilds
+      - g
+  gadmin:
+    usage: /<command>

@@ -1,0 +1,10 @@
+com\mrgabe\guilds\database\Redis.class
+com\mrgabe\guilds\utils\PluginLogger.class
+com\mrgabe\guilds\api\GuildRank.class
+com\mrgabe\guilds\database\MySQL.class
+com\mrgabe\guilds\utils\Placeholders.class
+com\mrgabe\guilds\api\GuildPlayer.class
+com\mrgabe\guilds\database\PoolSettings.class
+com\mrgabe\guilds\api\Guild.class
+com\mrgabe\guilds\utils\Utils.class
+com\mrgabe\guilds\api\Settings.class

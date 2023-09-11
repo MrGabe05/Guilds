@@ -35,11 +35,13 @@
             <groupId>com.mrgabe</groupId>
             <artifactId>guilds-api</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
             <version>9.2.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

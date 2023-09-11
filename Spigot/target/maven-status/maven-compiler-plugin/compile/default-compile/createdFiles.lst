@@ -1,0 +1,8 @@
+com\mrgabe\guilds\spigot\menus\Menu.class
+com\mrgabe\guilds\spigot\config\YamlConfig.class
+com\mrgabe\guilds\spigot\utils\ItemBuilder.class
+com\mrgabe\guilds\spigot\Guilds$1.class
+com\mrgabe\guilds\spigot\Guilds.class
+com\mrgabe\guilds\spigot\menus\impl\GuildMenu.class
+com\mrgabe\guilds\spigot\listeners\Listeners.class
+com\mrgabe\guilds\spigot\menus\impl\ConfirmMenu.class

@@ -1,0 +1,7 @@
+Redis:
+  Host: "localhost"
+  Port: 6379
+
+Settings:
+  PointsForKill: 5
+  MaxMembersForGuild: 10
